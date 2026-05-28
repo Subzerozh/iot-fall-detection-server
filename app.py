@@ -7,6 +7,8 @@ CORS(app)
 # lưu dữ liệu mới nhất
 latest_data = {
     "heartRate": 0,
+    "spo2": 0,
+    "temperature": 0.0,
     "fall": False
 }
 
@@ -17,11 +19,13 @@ def receive_data():
 
     data = request.json
 
-    # lấy dữ liệu
+    # lấy dữ liệu từ ESP32
     heartRate = data.get("heartRate", 0)
+    spo2 = data.get("spo2", 0)
+    temperature = data.get("temperature", 0.0)
     acc = data.get("acc", {})
 
-    # logic phát hiện ngã đơn giản
+    # logic phát hiện ngã
     fall = False
     if acc.get("z", 0) > 2.5:
         fall = True
@@ -29,6 +33,8 @@ def receive_data():
     # cập nhật dữ liệu
     latest_data = {
         "heartRate": heartRate,
+        "spo2": spo2,
+        "temperature": temperature,
         "fall": fall
     }
 
@@ -45,6 +51,7 @@ def get_data():
 @app.route('/')
 def home():
     return "Server is running!"
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
